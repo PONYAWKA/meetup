@@ -1,2 +1,2 @@
 import { Request } from "express";
-export type APIRequest<T> = Request<unknown, unknown, T>;
+export type APIRequest<T = unknown> = Request<unknown, unknown, T>;

@@ -6,5 +6,5 @@ export const userRouter = Router();
 
 userRouter.post("/reg", userController.createUser);
 userRouter.get("/login", userController.logIn);
-userRouter.post("/refresh", userController.refresh);
-userRouter.post("/logout", userController.logOut);
+userRouter.get("/refresh", userController.refresh);
+userRouter.get("/logout", userController.logOut);

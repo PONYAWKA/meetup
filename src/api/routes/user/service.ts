@@ -1,4 +1,5 @@
 import { Response } from "express";
+import { accessTokenKey, refreshTokenKey } from "src/api/constants";
 import { ApiError } from "src/api/foundation/error/apiError";
 import { User } from "src/api/types/user";
 import { comparePassword, hashPassword, JWTToken } from "src/api/utils";
@@ -8,8 +9,8 @@ import { createUserSQL } from "src/data-base/sqls/create-user.sql";
 import { getUserByName } from "src/data-base/sqls/get-user-by-name";
 import { updateRefreshToken } from "src/data-base/sqls/update-refresh-token";
 class UserService {
-  private async updateRefreshToken(id: string, token: string) {
-    return await DB.query(updateRefreshToken, [token, id]);
+  private async updateRefreshToken(name: string, token: string) {
+    return await DB.query(updateRefreshToken, [token, name]);
   }
 
   async reg(
@@ -20,7 +21,7 @@ class UserService {
   ) {
     const hashedPassword = await hashPassword(password);
 
-    const userRequest = await DB.query<{ id: string }>(createUserSQL, [
+    const userRequest = await DB.query<User>(createUserSQL, [
       userName,
       hashedPassword,
       role ?? ["user"],
@@ -28,7 +29,10 @@ class UserService {
 
     const user = userRequest.rows[0];
 
-    const tokens = JWTToken.generateTokens(user.id, role ?? ["user", "admin"]);
+    const tokens = JWTToken.generateTokens(
+      user.name,
+      role ?? ["user", "admin"]
+    );
 
     setupTokens(res, tokens.AccessToken, tokens.RefreshToken);
 
@@ -44,13 +48,34 @@ class UserService {
       throw ApiError.unAuthorized("incorrect password");
     }
 
-    const tokens = JWTToken.generateTokens(user.id, user.role);
+    const tokens = JWTToken.generateTokens(user.name, user.role);
 
     setupTokens(res, tokens.AccessToken, tokens.RefreshToken);
 
-    this.updateRefreshToken(user.id, tokens.RefreshToken);
+    this.updateRefreshToken(user.name, tokens.RefreshToken);
 
     return user;
+  }
+
+  async refresh(res: Response) {
+    const { name } = JWTToken.verifyRefreshToken(
+      res.locals.cookie[refreshTokenKey]
+    );
+
+    const userRequest = await DB.query<User>(getUserByName, [name]);
+
+    const user = userRequest.rows[0];
+
+    const tokens = JWTToken.generateTokens(user.name, user.role);
+
+    setupTokens(res, tokens.AccessToken, tokens.RefreshToken);
+
+    this.updateRefreshToken(user.name, tokens.RefreshToken);
+  }
+
+  async logOut(res: Response) {
+    res.clearCookie(refreshTokenKey);
+    res.clearCookie(accessTokenKey);
   }
 }
 

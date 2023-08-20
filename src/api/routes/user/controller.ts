@@ -1,4 +1,4 @@
-import { NextFunction, Request, Response } from "express";
+import { NextFunction, Response } from "express";
 import { APIRequest } from "src/api/types/request";
 
 import { GetLogIn } from "./interfaces/get-log-in";
@@ -6,10 +6,6 @@ import { PostRegNewUser } from "./interfaces/post-reg-new-user";
 import { userService } from "./service";
 
 class UserController {
-  async getUser(req: Request, res: Response) {
-    res.json("user");
-  }
-
   async createUser(
     { body }: APIRequest<PostRegNewUser>,
     res: Response,
@@ -22,7 +18,7 @@ class UserController {
     } catch (e) {
       return next(e);
     }
-    return res.json("");
+    return res.json();
   }
 
   async logIn(
@@ -36,13 +32,26 @@ class UserController {
     } catch (e) {
       return next(e);
     }
-    return res.json("success");
+    return res.json();
   }
 
-  // async logOut(req: APIRequest, res: Response) {}
-  // async refresh(req: APIRequest, res: Response) {}
-  async logOut() {}
-  async refresh() {}
+  async refresh(req: APIRequest, res: Response, next: NextFunction) {
+    try {
+      await userService.refresh(res);
+      return res.status(200).json();
+    } catch (e) {
+      return next(e);
+    }
+  }
+
+  async logOut(req: APIRequest, res: Response, next: NextFunction) {
+    try {
+      await userService.logOut(res);
+      return res.status(200).json();
+    } catch (e) {
+      return next(e);
+    }
+  }
 }
 
 export const userController = new UserController();

@@ -1,15 +1,18 @@
 import JWT from "jsonwebtoken";
+
+import { ApiError } from "../foundation/error/apiError";
+import { getBuildEnv } from "./getBuildEnv";
 class Token {
-  generateTokens(id: string, role: string[]) {
+  generateTokens(name: string, role: string[]) {
     const AccessToken = JWT.sign(
-      { id, role },
+      { name, role },
       process.env.SECRET_ACCESS_KEY as string,
       {
         expiresIn: "30m",
       }
     );
     const RefreshToken = JWT.sign(
-      { id },
+      { name },
       process.env.SECRET_REFRESH_KEY as string,
       {
         expiresIn: "15d",
@@ -21,18 +24,26 @@ class Token {
     };
   }
   verifyAccessToken(AccessToken: string) {
-    const verifyAccessToken = JWT.verify(
-      AccessToken,
-      process.env.SECRET_ACCESS_KEY as string
-    );
-    return verifyAccessToken;
+    try {
+      const verifyAccessToken = JWT.verify(
+        AccessToken,
+        getBuildEnv("SECRET_ACCESS_KEY") as string
+      ) as JWT.JwtPayload;
+      return verifyAccessToken;
+    } catch (e) {
+      throw ApiError.unAuthorized("token expired");
+    }
   }
-  verifyRefreshToken(RefreshToken: string) {
-    const verifyRefreshToken = JWT.verify(
-      RefreshToken,
-      process.env.SECRET_REFRESH_KEY as string
-    );
-    return verifyRefreshToken;
+  verifyRefreshToken(refreshToken: string) {
+    try {
+      const verifyRefreshToken = JWT.verify(
+        refreshToken,
+        getBuildEnv("SECRET_REFRESH_KEY") as string
+      ) as JWT.JwtPayload;
+      return verifyRefreshToken;
+    } catch (e) {
+      throw ApiError.unAuthorized("token expired");
+    }
   }
 }
 

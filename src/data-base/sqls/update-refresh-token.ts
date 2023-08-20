@@ -1,6 +1,6 @@
 export const updateRefreshToken = `
 UPDATE person
 SET refreshtoken = $1
-WHERE id = $2
+WHERE name = $2
 RETURNING *;
 `;

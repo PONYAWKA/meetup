@@ -1,5 +1,7 @@
+// eslint-disable-next-line @typescript-eslint/no-var-requires
+require("dotenv").config();
+
 import cookieParser from "cookie-parser";
-import env from "dotenv";
 import express from "express";
 
 import { errorMiddleware } from "./middleware/error-middleware";
@@ -9,7 +11,6 @@ import { getBuildEnv } from "./utils/getBuildEnv";
 
 const app = express();
 const port = getBuildEnv("PORT");
-env.config();
 
 app.use(express.json());
 app.use(cookieParser());

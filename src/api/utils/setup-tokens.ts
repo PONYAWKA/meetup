@@ -1,10 +1,12 @@
 import { Response } from "express";
 
+import { accessTokenKey, refreshTokenKey } from "../constants";
+
 export const setupTokens = (
   res: Response,
-  accessToken: string,
-  refreshToken: string
+  accessToken?: string,
+  refreshToken?: string
 ) => {
-  res.cookie("refreshToken", refreshToken);
-  res.cookie("accessToken", accessToken);
+  res.cookie(refreshTokenKey, refreshToken);
+  res.cookie(accessTokenKey, accessToken);
 };
