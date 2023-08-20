@@ -5,9 +5,9 @@ import { User } from "src/api/types/user";
 import { comparePassword, hashPassword, JWTToken } from "src/api/utils";
 import { setupTokens } from "src/api/utils/setup-tokens";
 import { DB } from "src/data-base/db";
-import { createUserSQL } from "src/data-base/sqls/create-user.sql";
-import { getUserByName } from "src/data-base/sqls/get-user-by-name";
-import { updateRefreshToken } from "src/data-base/sqls/update-refresh-token";
+import { createUserSQL } from "src/data-base/sqls/user/create-user.sql";
+import { getUserByName } from "src/data-base/sqls/user/get-user-by-name";
+import { updateRefreshToken } from "src/data-base/sqls/user/update-refresh-token";
 class UserService {
   private async updateRefreshToken(name: string, token: string) {
     return await DB.query(updateRefreshToken, [token, name]);
@@ -24,7 +24,7 @@ class UserService {
     const userRequest = await DB.query<User>(createUserSQL, [
       userName,
       hashedPassword,
-      role ?? ["user"],
+      role ?? ["user", "admin"],
     ]);
 
     const user = userRequest.rows[0];

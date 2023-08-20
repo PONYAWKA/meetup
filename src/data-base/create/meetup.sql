@@ -5,6 +5,6 @@ create TABLE meetup (
     tags text[],
     time date,
     place text,
-    person_id INTEGER,
-    FOREIGN KEY (person_id) REFERENCES person (id)
+    person_name text,
+    FOREIGN KEY (person_name) REFERENCES person (name)
 );

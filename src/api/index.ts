@@ -7,7 +7,7 @@ import express from "express";
 import { errorMiddleware } from "./middleware/error-middleware";
 import { parseCookie } from "./middleware/parse-cookie-middleware";
 import { apiRouter } from "./routes";
-import { getBuildEnv } from "./utils/getBuildEnv";
+import { getBuildEnv } from "./utils/get-build-env";
 
 const app = express();
 const port = getBuildEnv("PORT");
