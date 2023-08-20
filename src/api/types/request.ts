@@ -1,2 +1,8 @@
 import { Request } from "express";
-export type APIRequest<T = unknown> = Request<unknown, unknown, T>;
+import * as core from "express-serve-static-core";
+
+export type APIRequest<T = unknown> = Request<
+  core.ParamsDictionary,
+  unknown,
+  T
+>;

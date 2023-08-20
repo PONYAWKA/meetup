@@ -30,13 +30,21 @@ class MeetupController {
     return res.json(meetups);
   }
 
-  async update(req: Request<PutUpdateMeetup>, res: Response) {
-    const id = req.params.id as number;
+  async update(req: APIRequest<PutUpdateMeetup>, res: Response) {
+    const id = req.params.id;
     if (!id) throw ApiError.badReq("no id provided");
 
     const meetup = await meetupService.update(id, req.body);
 
     return res.json(meetup);
+  }
+
+  async delete(req: Request, res: Response) {
+    const id = parseInt(req.params.id);
+
+    if (!id) throw ApiError.badReq("no id provided");
+
+    return res.status(200).json();
   }
 }
 

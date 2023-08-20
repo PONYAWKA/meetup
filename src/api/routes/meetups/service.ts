@@ -3,6 +3,7 @@ import { parseMeetupGetUrl } from "src/api/routes/meetups/utils/parse-meetup-get
 import { Meetup } from "src/api/types/meetup";
 import { DB } from "src/data-base/db";
 import { createMeetup } from "src/data-base/sqls/meetup/create";
+import { deleteMeetupSQL } from "src/data-base/sqls/meetup/delete";
 import { getMeetup } from "src/data-base/sqls/meetup/get";
 import { getAllMeetup } from "src/data-base/sqls/meetup/get-all";
 import { updateMeetupSQL } from "src/data-base/sqls/meetup/put-update";
@@ -36,10 +37,14 @@ class MeetupService {
     return meetups.rows;
   }
 
-  async update(id: number, fields: PutUpdateMeetup) {
+  async update(id: number | string, fields: PutUpdateMeetup) {
     const updateMeetup = [...getMeetupUpdateArray(fields), id];
     const meetup = await DB.query<Meetup>(updateMeetupSQL, updateMeetup);
     return meetup.rows[0];
+  }
+
+  async delete(id: number | string) {
+    await DB.query(deleteMeetupSQL, [id]);
   }
 }
 
