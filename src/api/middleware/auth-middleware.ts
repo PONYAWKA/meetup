@@ -7,11 +7,11 @@ export const authMiddleware = (
   res: Response,
   next: NextFunction
 ) => {
-  const JWT = req.headers.authorization?.split(" ")[1] as string;
+  const JWT = res.locals.cookie["accessToken"];
   try {
     JWTToken.verifyAccessToken(JWT);
     next();
   } catch (e) {
-    res.status(401);
+    return res.status(401);
   }
 };
