@@ -1,5 +1,7 @@
 // eslint-disable-next-line @typescript-eslint/no-var-requires
 require("dotenv").config();
+import "reflect-metadata";
+import "es6-shim";
 
 import cookieParser from "cookie-parser";
 import express from "express";
