@@ -21,10 +21,11 @@ class MeetupService {
     theme: string,
     description: string,
     tags: string[],
-    place: string
+    place: string,
+    date: string
   ) {
     const person_name = locals.user.name;
-    const VALUES = [theme, description, tags, new Date(), place, person_name];
+    const VALUES = [theme, description, tags, date, place, person_name];
 
     const meetup = DB.query<Meetup>(createMeetup, VALUES);
 

@@ -13,13 +13,14 @@ class MeetupController {
     return res.json(meetups.rows);
   }
   async create({ body }: APIRequest<PostCreateMeetup>, res: Response) {
-    const { description, place, tags, theme } = body;
+    const { description, place, tags, theme, date } = body;
     const meetup = await meetupService.create(
       res,
       theme,
       description,
       tags,
-      place
+      place,
+      date
     );
     return res.json(meetup.rows[0]);
   }

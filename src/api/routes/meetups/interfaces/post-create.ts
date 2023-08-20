@@ -3,4 +3,5 @@ export interface PostCreateMeetup {
   description: string;
   tags: string[];
   place: string;
+  date: string;
 }
