@@ -1,6 +1,6 @@
 import { NextFunction, Request, Response } from "express";
 
-import { JWTToken } from "../utils/jwt";
+import { JWTToken } from "../foundation/jwt/jwt";
 
 export const authMiddleware = async (
   req: Request,

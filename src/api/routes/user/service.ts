@@ -1,38 +1,33 @@
 import { Response } from "express";
 import { accessTokenKey, refreshTokenKey } from "src/api/constants";
 import { ApiError } from "src/api/foundation/error/apiError";
+import { JWTToken } from "src/api/foundation/jwt/jwt";
+import { Role } from "src/api/types/roles";
 import { User } from "src/api/types/user";
-import { comparePassword, hashPassword, JWTToken } from "src/api/utils";
+import { comparePassword, hashPassword } from "src/api/utils";
 import { setupTokens } from "src/api/utils/setup-tokens";
 import { DB } from "src/data-base/db";
 import { createUserSQL } from "src/data-base/sqls/user/create-user.sql";
 import { getUserByName } from "src/data-base/sqls/user/get-user-by-name";
 import { updateRefreshToken } from "src/data-base/sqls/user/update-refresh-token";
+
+import { getUserRole } from "./utils/get-user-role";
 class UserService {
   private async updateRefreshToken(name: string, token: string) {
     return await DB.query(updateRefreshToken, [token, name]);
   }
 
-  async reg(
-    userName: string,
-    password: string,
-    res: Response,
-    role?: string[]
-  ) {
+  async reg(userName: string, password: string, res: Response, role?: Role[]) {
     const hashedPassword = await hashPassword(password);
-
     const userRequest = await DB.query<User>(createUserSQL, [
       userName,
       hashedPassword,
-      role ?? ["user", "admin"],
+      getUserRole(role),
     ]);
 
     const user = userRequest.rows[0];
 
-    const tokens = JWTToken.generateTokens(
-      user.name,
-      role ?? ["user", "admin"]
-    );
+    const tokens = JWTToken.generateTokens(user.name, getUserRole(role));
 
     setupTokens(res, tokens.AccessToken, tokens.RefreshToken);
 

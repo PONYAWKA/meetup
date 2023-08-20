@@ -1,7 +1,7 @@
 import JWT from "jsonwebtoken";
 
-import { ApiError } from "../foundation/error/apiError";
-import { getBuildEnv } from "./get-build-env";
+import { getBuildEnv } from "../../utils/get-build-env";
+import { ApiError } from "../error/apiError";
 class Token {
   generateTokens(name: string, role: string[]) {
     const AccessToken = JWT.sign(
