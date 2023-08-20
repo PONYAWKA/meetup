@@ -39,7 +39,9 @@ class UserService {
 
     const user = userRequest.rows[0];
 
-    if (comparePassword(user.password, password)) {
+    if (!user) throw ApiError.badReq("no such user");
+
+    if (!comparePassword(password, user.password)) {
       throw ApiError.unAuthorized("incorrect password");
     }
 
