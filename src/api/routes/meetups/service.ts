@@ -1,10 +1,15 @@
 import { Response } from "express";
+import { parseMeetupGetUrl } from "src/api/routes/meetups/utils/parse-meetup-get-url";
 import { Meetup } from "src/api/types/meetup";
-import { parseMeetupGetUrl } from "src/api/utils/parse-meetup-get-url";
 import { DB } from "src/data-base/db";
 import { createMeetup } from "src/data-base/sqls/meetup/create";
 import { getMeetup } from "src/data-base/sqls/meetup/get";
 import { getAllMeetup } from "src/data-base/sqls/meetup/get-all";
+import { updateMeetupSQL } from "src/data-base/sqls/meetup/put-update";
+
+import { PutUpdateMeetup } from "./interfaces/put-update-meetup";
+import { getMeetupUpdateArray } from "./utils/get-meetup-update-array";
+
 class MeetupService {
   async all() {
     return await DB.query<Meetup>(getAllMeetup);
@@ -24,10 +29,17 @@ class MeetupService {
 
     return meetup;
   }
+
   async get(url: string) {
     const { filters, sortField } = parseMeetupGetUrl(url);
     const meetups = await DB.query<Meetup>(getMeetup(sortField), filters);
     return meetups.rows;
+  }
+
+  async update(id: number, fields: PutUpdateMeetup) {
+    const updateMeetup = [...getMeetupUpdateArray(fields), id];
+    const meetup = await DB.query<Meetup>(updateMeetupSQL, updateMeetup);
+    return meetup.rows[0];
   }
 }
 
