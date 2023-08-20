@@ -4,4 +4,4 @@ import { userController } from "./controller";
 
 export const userRouter = Router();
 
-userRouter.get("/a", userController.getUser);
+userRouter.post("/reg", userController.createUser);
