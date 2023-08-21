@@ -19,19 +19,23 @@ class UserService {
 
   async reg(userName: string, password: string, res: Response, role?: Role[]) {
     const hashedPassword = await hashPassword(password);
-    const userRequest = await DB.query<User>(createUserSQL, [
-      userName,
-      hashedPassword,
-      getUserRole(role),
-    ]);
 
-    const user = userRequest.rows[0];
+    try {
+      const userRequest = await DB.query<User>(createUserSQL, [
+        userName,
+        hashedPassword,
+        getUserRole(role),
+      ]);
+      const user = userRequest.rows[0];
 
-    const tokens = JWTToken.generateTokens(user.name, getUserRole(role));
+      const tokens = JWTToken.generateTokens(user.name, getUserRole(role));
 
-    setupTokens(res, tokens.AccessToken, tokens.RefreshToken);
+      setupTokens(res, tokens.AccessToken, tokens.RefreshToken);
 
-    return user;
+      return user;
+    } catch (e) {
+      throw ApiError.badReq("Incorrect user info");
+    }
   }
 
   async logIn(userName: string, password: string, res: Response) {

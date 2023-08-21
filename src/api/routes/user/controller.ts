@@ -16,12 +16,14 @@ class UserController {
   ) {
     const { name, password, role } = body;
 
-    validateRequest(body, PostRegNewUserDTO, next);
+    const validate = validateRequest(body, PostRegNewUserDTO, next);
+
+    if (validate) return validate();
 
     try {
       await userService.reg(name, password, res, role);
     } catch (e) {
-      return next(e);
+      next(e);
     }
     return res.json();
   }
@@ -34,12 +36,12 @@ class UserController {
     const { name, password } = body;
 
     const validate = validateRequest(body, GetLogInDTO, next);
-    if (validate) return validate;
+    if (validate) return validate();
 
     try {
       await userService.logIn(name, password, res);
     } catch (e) {
-      return next(e);
+      next(e);
     }
     return res.json();
   }
@@ -49,7 +51,7 @@ class UserController {
       await userService.refresh(res);
       return res.status(200).json();
     } catch (e) {
-      return next(e);
+      next(e);
     }
   }
 
@@ -58,7 +60,7 @@ class UserController {
       await userService.logOut(res);
       return res.status(200).json();
     } catch (e) {
-      return next(e);
+      next(e);
     }
   }
 }

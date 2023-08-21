@@ -12,6 +12,7 @@ export const validateRequest = <T extends object>(
 
   const validationErrors = validateSync(DTO);
 
-  if (validationErrors.length > 0) return next(validationErrors.toString());
+  if (validationErrors.length > 0)
+    return () => next(validationErrors.toString());
   return null;
 };

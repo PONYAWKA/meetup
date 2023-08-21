@@ -19,7 +19,7 @@ class MeetupController {
     const { description, place, tags, theme, date } = body;
 
     const validate = validateRequest(body, PostCreateMeetupDTO, next);
-    if (validate) return validate;
+    if (validate) return validate();
 
     const meetup = await meetupService.create(
       res,
@@ -47,7 +47,7 @@ class MeetupController {
     if (!id) throw ApiError.badReq("no id provided");
 
     const validate = validateRequest(req.body, PutUpdateMeetupDTO, next);
-    if (validate) return validate;
+    if (validate) return validate();
 
     const meetup = await meetupService.update(id, req.body);
 
