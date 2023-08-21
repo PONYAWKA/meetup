@@ -11,10 +11,6 @@ import { PutUpdateMeetup } from "./interfaces/put-update-meetup";
 import { meetupService } from "./service";
 
 class MeetupController {
-  async getAll(_req: Request, res: Response) {
-    const meetups = await meetupService.all();
-    return res.json(meetups.rows);
-  }
   async create(
     { body }: APIRequest<PostCreateMeetup>,
     res: Response,
@@ -62,6 +58,8 @@ class MeetupController {
     const id = parseInt(req.params.id);
 
     if (!id) throw ApiError.badReq("no id provided");
+
+    await meetupService.delete(id);
 
     return res.status(200).json();
   }
