@@ -18,9 +18,8 @@ class UserService {
   }
 
   async reg(userName: string, password: string, res: Response, role?: Role[]) {
-    const hashedPassword = await hashPassword(password);
-
     try {
+      const hashedPassword = await hashPassword(password).catch();
       const userRequest = await DB.query<User>(createUserSQL, [
         userName,
         hashedPassword,

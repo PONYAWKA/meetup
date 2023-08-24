@@ -1,4 +1,4 @@
-import { NextFunction, Request, Response } from "express";
+import { Request, Response } from "express";
 import { PostCreateMeetupDTO } from "src/api/dto/post-create-meetup.dto";
 import { PutUpdateMeetupDTO } from "src/api/dto/post-update-meetup.dto";
 import { ApiError } from "src/api/foundation/error/apiError";
@@ -11,15 +11,11 @@ import { PutUpdateMeetup } from "./interfaces/put-update-meetup";
 import { meetupService } from "./service";
 
 class MeetupController {
-  async create(
-    { body }: APIRequest<PostCreateMeetup>,
-    res: Response,
-    next: NextFunction
-  ) {
+  async create({ body }: APIRequest<PostCreateMeetup>, res: Response) {
     const { description, place, tags, theme, date } = body;
 
-    const validate = validateRequest(body, PostCreateMeetupDTO, next);
-    if (validate) return validate();
+    const validate = validateRequest(body, PostCreateMeetupDTO);
+    if (validate) throw validate;
 
     const meetup = await meetupService.create(
       res,
@@ -29,29 +25,25 @@ class MeetupController {
       place,
       date
     );
-    return res.json(meetup.rows[0]);
+    res.json(meetup.rows[0]);
   }
   async get(req: Request, res: Response) {
     const { originalUrl } = req;
     const meetups = await meetupService.get(getUrl(originalUrl));
 
-    return res.json(meetups);
+    res.json(meetups);
   }
 
-  async update(
-    req: APIRequest<PutUpdateMeetup>,
-    res: Response,
-    next: NextFunction
-  ) {
+  async update(req: APIRequest<PutUpdateMeetup>, res: Response) {
     const id = req.params.id;
     if (!id) throw ApiError.badReq("no id provided");
 
-    const validate = validateRequest(req.body, PutUpdateMeetupDTO, next);
-    if (validate) return validate();
+    const validate = validateRequest(req.body, PutUpdateMeetupDTO);
+    if (validate) throw validate;
 
     const meetup = await meetupService.update(id, req.body);
 
-    return res.json(meetup);
+    res.json(meetup);
   }
 
   async delete(req: Request, res: Response) {
@@ -61,7 +53,7 @@ class MeetupController {
 
     await meetupService.delete(id);
 
-    return res.status(200).json();
+    res.status(200).json();
   }
 }
 

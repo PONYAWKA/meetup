@@ -1,18 +1,18 @@
 import { ClassConstructor, plainToClass } from "class-transformer";
-import { validateSync } from "class-validator";
-import { NextFunction } from "express";
+import { validate } from "class-validator";
 
-// eslint-disable-next-line @typescript-eslint/no-unused-vars
-export const validateRequest = <T extends object>(
+export const validateRequest = async <T extends object>(
   request: any,
-  requestDTO: ClassConstructor<T>,
-  next: NextFunction
+  requestDTO: ClassConstructor<T>
 ) => {
   const DTO: T = plainToClass(requestDTO, request);
 
-  const validationErrors = validateSync(DTO);
+  const validationErrors = await validate(DTO);
 
   if (validationErrors.length > 0)
-    return () => next(validationErrors.toString());
+    return validationErrors.reduce(
+      (acc, cur) => Object.assign(acc, { [cur.property]: cur.constraints }),
+      {}
+    );
   return null;
 };

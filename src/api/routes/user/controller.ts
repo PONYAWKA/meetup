@@ -15,17 +15,19 @@ class UserController {
     next: NextFunction
   ) {
     const { name, password, role } = body;
-
-    const validate = validateRequest(body, PostRegNewUserDTO, next);
-
-    if (validate) return validate();
+    try {
+      const validate = await validateRequest(body, PostRegNewUserDTO);
+      if (validate) throw validate;
+    } catch (e) {
+      next(e);
+    }
 
     try {
       await userService.reg(name, password, res, role);
     } catch (e) {
       next(e);
     }
-    return res.json();
+    res.json();
   }
 
   async logIn(
@@ -35,21 +37,21 @@ class UserController {
   ) {
     const { name, password } = body;
 
-    const validate = validateRequest(body, GetLogInDTO, next);
-    if (validate) return validate();
+    const validate = validateRequest(body, GetLogInDTO);
+    if (validate) throw validate;
 
     try {
       await userService.logIn(name, password, res);
     } catch (e) {
       next(e);
     }
-    return res.json();
+    res.json();
   }
 
   async refresh(_req: APIRequest, res: Response, next: NextFunction) {
     try {
       await userService.refresh(res);
-      return res.status(200).json();
+      res.status(200).json();
     } catch (e) {
       next(e);
     }
@@ -58,7 +60,7 @@ class UserController {
   async logOut(_req: APIRequest, res: Response, next: NextFunction) {
     try {
       await userService.logOut(res);
-      return res.status(200).json();
+      res.status(200).json();
     } catch (e) {
       next(e);
     }

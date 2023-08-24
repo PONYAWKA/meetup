@@ -1,5 +1,6 @@
 import { NextFunction, Request, Response } from "express";
 
+import { ApiError } from "../foundation/error/apiError";
 import { JWTToken } from "../foundation/jwt/jwt";
 
 export const authMiddleware = async (
@@ -12,7 +13,7 @@ export const authMiddleware = async (
     const data = JWTToken.verifyAccessToken(JWT);
     res.locals.user = data;
     next();
-  } catch (e) {
-    next(e);
+  } catch (e: any) {
+    next(e as ApiError);
   }
 };
